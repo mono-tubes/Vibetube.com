@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibetube - Тестовый вход</title>
+    <link rel="icon" href="Vibetube.png" type="image/png">
+    <style>
+        /* --- CSS Стили (Упрощенные для страницы входа) --- */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+        .login-container, .main-app, .loading-screen {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+        .main-app {
+            display: none; /* Скрыто по умолчанию */
+            width: 100%;
+            max-width: 1200px;
+            height: 100%;
+            min-height: 100vh;
+            padding: 0;
+            box-shadow: none;
+            text-align: left;
+        }
+        h2 {
+            color: #ff0000;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #cc0000;
+        }
+        #message {
+            margin-top: 15px;
+            color: red;
+            font-weight: bold;
+        }
+        #testButton {
+            display: none; /* Скрыто до успешного входа */
+            margin-top: 20px;
+            background-color: #007bff;
+        }
+        #testButton:hover {
+            background-color: #0056b3;
+        }
+
+        /* --- Стили для загрузки --- */
+        .loading-screen {
+            display: none; /* Скрыто по умолчанию */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            z-index: 200;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #ff0000;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1.5s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #loadStatus {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        /* --- Стили Vibetube (Сетка и Шапка) --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff0000;
+        }
+        .main-content {
+            display: flex;
+            padding-top: 1px; /* Чтобы отделить от шапки */
+        }
+        .sidebar {
+            width: 200px;
+            padding: 15px;
+            background-color: #fff;
+            position: sticky;
+            top: 50px; /* С учетом высоты шапки */
+            height: calc(100vh - 50px);
+            border-right: 1px solid #eee;
+        }
+        .video-grid {
+            flex-grow: 1;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .video-card {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .thumbnail {
+            background-color: #ddd;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            color: #333;
+        }
+        .video-info {
+            display: flex;
+            padding: 10px;
+        }
+        .channel-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+        }
+        .video-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .channel-name, .video-stats {
+            font-size: 14px;
+            color: #606060;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container" id="loginScreen">
+        <h2>Vibetube Вход</h2>
+        <input type="text" id="username" placeholder="Логин (например, totallini)">
+        <input type="password" id="password" placeholder="Пароль (например, &&&)))">
+        <button onclick="login()">Войти</button>
+        <button onclick="register()">Зарегистрироваться (Имитация)</button>
+        <p id="message"></p>
+        
+        <button id="testButton" onclick="startTest()">Начать Тестирование Нагрузки (5 сек)</button>
+    </div>
+
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+        <p id="loadStatus">Идет тестирование... (0%)</p>
+    </div>
+
+    <div class="main-app" id="vibetubeApp">
+        <header class="header">
+            <div class="logo-container">
+                <span style="color: black;">Vibe</span>tube
+            </div>
+            <div style="font-size: 14px;">Вы вошли как <span id="currentUser" style="font-weight: bold;">Гость</span></div>
+        </header>
+
+        <main class="main-content">
+            <aside class="sidebar">
+                <p style="font-weight: bold; margin-bottom: 10px;">🏠 Главная</p>
+                <p>▶️ Shorts</p>
+                <hr>
+                <p style="margin-top: 10px;">**Контент Админа**</p>
+                </aside>
+
+            <section class="video-grid">
+                <div class="video-card">
+                    <div class="thumbnail">
+                        <span>ВИДЕО 1: Vibetube Введение</span>
+                    </div>
+                    <div class="video-info">
+                        <div class="channel-avatar">A</div>
+                        <div class="text-info">
+                            <h4 class="video-title">Название Видео от Админа</h4>
+                            <p class="channel-name">Админ Vibetube</p>
+                            <p class="video-stats">100 просмотров • 1 час назад</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <div class="thumbnail">
+                        <span>ВИДЕО 2: Chill Vibe</span>
+                    </div>
+                    <div class="video-info">
+                        <div class="channel-avatar">R</div>
+                        <div class="text-info">
+                            <h4 class="video-title">Лучшие осенние вайбы для работы</h4>
+                            <p class="channel-name">Random User</p>
+                            <p class="video-stats">50 тыс. просмотров • 3 часа назад</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // *** УЧЕТНЫЕ ДАННЫЕ АДМИНА (Внимание: небезопасно) ***
+        const ADMIN_USER = 'totallini';
+        const ADMIN_PASS = '&&&)))';
+        // Имитация базы данных пользователей (для демонстрации)
+        let users = {
+            [ADMIN_USER]: ADMIN_PASS
+        };
+
+        const loginScreen = document.getElementById('loginScreen');
+        const vibetubeApp = document.getElementById('vibetubeApp');
+        const testButton = document.getElementById('testButton');
+        const message = document.getElementById('message');
+        const currentUserSpan = document.getElementById('currentUser');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const loadStatus = document.getElementById('loadStatus');
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (users[username] === password) {
+                if (username === ADMIN_USER) {
+                    message.textContent = 'Успешный вход! Вы Администратор.';
+                    testButton.style.display = 'block';
+                } else {
+                    message.textContent = 'Успешный вход!';
+                    testButton.style.display = 'none'; // Только админ видит кнопку
+                }
+                currentUserSpan.textContent = username;
+                // Скрываем форму входа и показываем приложение
+                loginScreen.style.display = 'none';
+                vibetubeApp.style.display = 'flex';
+                document.body.style.display = 'block'; // Возвращаем normal body layout
+            } else {
+                message.textContent = 'Неверный логин или пароль.';
+                testButton.style.display = 'none';
+            }
+        }
+
+        function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === ADMIN_USER) {
+                message.textContent = 'Этот логин зарезервирован для Администратора.';
+            } else if (username.length < 3 || password.length < 3) {
+                 message.textContent = 'Логин и пароль должны быть не менее 3 символов.';
+            } else if (users[username]) {
+                message.textContent = 'Пользователь с таким логином уже существует.';
+            } else {
+                // Имитация создания аккаунта
+                users[username] = password;
+                message.textContent = `Аккаунт '${username}' создан! Можете войти.`;
+                document.getElementById('password').value = ''; // Очистить пароль после регистрации
+            }
+        }
+        
+        function startTest() {
+            // 1. Показываем экран загрузки
+            vibetubeApp.style.display = 'none';
+            loadingScreen.style.display = 'flex';
+            
+            // 2. Имитируем процесс загрузки и обновления процентов
+            const duration = 5000; // 5 секунд
+            const startTime = Date.now();
+            
+            const interval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                let percentage = Math.min(100, Math.floor((elapsed / duration) * 100));
+                
+                loadStatus.textContent = `Идет тестирование... (${percentage}%)`;
+                
+                if (elapsed >= duration) {
+                    clearInterval(interval);
+                    
+                    // 3. Через 5 секунд показываем результат
+                    setTimeout(() => {
+                         // Показываем, что нагрузился
+                        loadStatus.textContent = '✅ Нагрузка успешно симулирована!';
+                        
+                        // 4. Через короткое время возвращаемся к приложению
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                            vibetubeApp.style.display = 'flex';
+                        }, 1500); // Показываем результат 1.5 секунды
+                        
+                    }, 50);
+                }
+            }, 100); // Обновляем статус каждые 100 мс
+        }
+
+        // Инициализация: убедиться, что показан только экран входа
+        document.addEventListener('DOMContentLoaded', () => {
+             // Скрываем все, кроме экрана входа
+            vibetubeApp.style.display = 'none';
+            loadingScreen.style.display = 'none';
+            document.body.style.display = 'flex'; // Центрируем форму
+        });
+    </script>
+
+</body>
+</html>
